@@ -1,0 +1,44 @@
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - src/data_ingestion.py
+    # params:
+    # - data
+    outs:
+    - data/raw
+    
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - data/raw
+    - src/data_preprocessing.py
+    outs:
+    - data/interim
+
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - data/interim
+    - src/feature_engineering.py
+    # params:
+    # - params.yaml:data_ingestion.test_size
+    outs:
+    - data/processed
+  model_building:
+    cmd: python src/model_building.py
+    deps:
+    - data/processed
+    - src/model_building.py
+    # params:
+    # - params.yaml:feature_engineering.max_features
+    outs:
+    - model.pkl
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - model.pkl
+    - data/processed
+    - src/model_evaluation.py
+    metrics:
+    - reports/metrics.json 
